@@ -46,7 +46,7 @@ public class UserController {
 
 		UserRest returnValue = new UserRest();
 		
-		if(userReq.getFirstName().isEmpty()) throw new UserServiceException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessages());
+		if(userReq.getFirstName().isEmpty()) throw new NullPointerException("The object is null");
 
 		UserDto userDto = new UserDto();
 		BeanUtils.copyProperties(userReq, userDto);
