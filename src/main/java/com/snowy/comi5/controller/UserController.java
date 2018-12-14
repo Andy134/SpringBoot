@@ -1,5 +1,8 @@
 package com.snowy.comi5.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -10,14 +13,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.snowy.comi5.dto.UserDto;
-import com.snowy.comi5.exceptions.UserServiceException;
 import com.snowy.comi5.model.request.UserReqModel;
+import com.snowy.comi5.model.response.OperationStatusModel;
 import com.snowy.comi5.model.response.UserRest;
 import com.snowy.comi5.service.UserService;
-import com.snowy.comi5.utils.ErrorMessages;
+import com.snowy.comi5.utils.RequestOperationName;
+import com.snowy.comi5.utils.RequestOperationStatus;
 
 @RestController
 @RequestMapping("users")
@@ -39,9 +44,9 @@ public class UserController {
 	}
 
 	@PostMapping(
-				consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE }, 
-				produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE }
-				)
+			consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE }, 
+			produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE }
+			)
 	public UserRest createUser(@RequestBody UserReqModel userReq) throws Exception { // Registration screen
 
 		UserRest returnValue = new UserRest();
@@ -57,14 +62,53 @@ public class UserController {
 		return returnValue;
 	}
 
-	@PutMapping
-	public String updateUser() {
-		return "Update user";
+	@PutMapping(
+			path = "/{id}", 
+			consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE }, 
+			produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE }
+			)
+	public UserRest updateUser(@PathVariable String id, @RequestBody UserReqModel userReq) {
+		
+		UserRest returnValue = new UserRest();
+		
+		UserDto userDto = new UserDto();
+		BeanUtils.copyProperties(userReq, userDto);
+		
+		UserDto updatedUser = userService.updateUser(id, userDto);
+		BeanUtils.copyProperties(updatedUser, returnValue);
+		
+		return returnValue;
 	}
 
-	@DeleteMapping
-	public String deleteUser() {
-		return "Delete user";
+	@DeleteMapping(
+			path = "/{id}",
+			produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE }
+			)
+	public OperationStatusModel deleteUser(@PathVariable String id) {
+		OperationStatusModel returnValue = new OperationStatusModel();
+		returnValue.setOperationName(RequestOperationName.DELETE.name());
+		
+		userService.deleteUser(id);
+		
+		returnValue.setOperationResult(RequestOperationStatus.SUCCESS.name());
+		return returnValue;
+	}
+	
+	@GetMapping(
+			produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE }
+			)
+	List<UserRest> getUser(@RequestParam(value="page", defaultValue="0") int page, @RequestParam(value="limit", defaultValue="25") int limit){
+		List<UserRest> returnValue = new ArrayList<>();
+		
+		List<UserDto> users = userService.getUsers(page, limit);
+		
+		for(UserDto userDto : users) {
+			UserRest userModel = new UserRest();
+			BeanUtils.copyProperties(userDto, userModel);
+			returnValue.add(userModel);
+		}
+		
+		return returnValue;
 	}
 
 }
