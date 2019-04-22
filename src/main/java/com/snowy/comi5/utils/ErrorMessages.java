@@ -8,7 +8,19 @@ public enum ErrorMessages {
 	AUTHENTICATION_FAILED("Authenticationfailed"),
 	COULD_NOT_UPDATE_RECORD("Could not update record"),
 	COULD_NOT_DELETE_RECORD("Could not delete record"),
-	EMAIL_ADDRESS_NOT_VERIFIED("Email address could not be verified");
+	EMAIL_ADDRESS_NOT_VERIFIED("Email address could not be verified"),
+	OBJECT_NULL("Object is null"),
+	
+	// Category
+	CAT_MAX_DEPT_CATEGORY_ERROR("Cannot create sub category exceed maximum dept."),
+	CATEGORY_EXISTED("Category existed"),
+	CATEGORY_NAME_REQUIRED("Category name required"),
+	CATEGORY_NOT_FOUND("Category not found"),
+	// Image
+	IMAGE_NOT_FOUND("Image not found"),
+	// Post
+	POST_EXISTED("Post existed"),
+	POST_NOT_FOUND("Post not found");
 	
 	private String errorMessages;
 
